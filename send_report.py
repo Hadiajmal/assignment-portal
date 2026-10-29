@@ -30,23 +30,18 @@ payload = {
     "failed": s.get("failed", 0),
     "overall_status": "PASSED" if s.get("failed", 0) == 0 else "FAILED",
     "tests": tests,
-}lines = [
-    "Repository: " + str(payload["repository"]),
-    "Branch: " + str(payload["branch"]),
-    "Commit: " + str(payload["commit_sha"]),
-    "Run ID: " + str(payload["run_id"]),
-    "Overall result: " + payload["overall_status"],
-    "Total: " + str(payload["total"]) + "  Passed: " + str(payload["passed"]) + "  Failed: " + str(payload["failed"]),
-    "",
-    "Individual results:",
-]
+}
+
+# Email body for the CI email step
 lines = [
     "Repository: " + str(payload["repository"]),
     "Branch: " + str(payload["branch"]),
     "Commit: " + str(payload["commit_sha"]),
     "Run ID: " + str(payload["run_id"]),
     "Overall result: " + payload["overall_status"],
-    "Total: " + str(payload["total"]) + "  Passed: " + str(payload["passed"]) + "  Failed: " + str(payload["failed"]),
+    "Total: " + str(payload["total"])
+    + "  Passed: " + str(payload["passed"])
+    + "  Failed: " + str(payload["failed"]),
     "",
     "Individual results:",
 ]
@@ -55,6 +50,7 @@ for t in tests:
 with open("email_body.txt", "w") as f:
     f.write("\n".join(lines))
 
+# Send the report to the local receiver
 url = os.environ["RECEIVER_URL"].rstrip("/") + "/report"
 resp = requests.post(url, json=payload, headers={"bypass-tunnel-reminder": "1"}, timeout=30)
 print(resp.status_code, resp.text)
