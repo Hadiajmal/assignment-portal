@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment Submission Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    input { width: 100%; padding: 8px; margin: 4px 0 12px; box-sizing: border-box; }
+    button { padding: 8px 16px; }
+    .error { color: #c00; }
+  </style>
+</head>
+<body>
+  <h2>Assignment Submission Portal (Demo)</h2>
+  <form id="f">
+    Name <input id="name">
+    Reg No <input id="reg_no">
+    Assignment Title <input id="title">
+    Submission URL <input id="url">
+    <button>Submit</button>
+  </form>
+  <p id="error" class="error"></p>
+  <h3>Submissions</h3>
+  <ul id="list"></ul>
+
+  <script>
+    const subs = [];
+    function validUrl(u) {
+      try {
+        const x = new URL(u);
+        return (x.protocol === "http:" || x.protocol === "https:") && x.hostname.includes(".");
+      } catch (e) { return false; }
+    }
+    document.getElementById("f").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const d = {
+        name: document.getElementById("name").value.trim(),
+        reg_no: document.getElementById("reg_no").value.trim(),
+        title: document.getElementById("title").value.trim(),
+        url: document.getElementById("url").value.trim()
+      };
+      const labels = { name: "name", reg_no: "registration number", title: "assignment title", url: "submission URL" };
+      let err = "";
+      for (const k in labels) { if (!d[k]) { err = "Missing " + labels[k]; break; } }
+      if (!err && !validUrl(d.url)) err = "Invalid submission URL";
+      document.getElementById("error").textContent = err;
+      if (err) return;
+      subs.push(d);
+      const li = document.createElement("li");
+      li.textContent = d.name + " (" + d.reg_no + ") - " + d.title + " - " + d.url;
+      document.getElementById("list").appendChild(li);
+      this.reset();
+    });
+  </script>
+</body>
+</html>
