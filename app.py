@@ -23,9 +23,7 @@ PAGE = """
 """
 
 def valid_url(u):
-    p = urlparse(u or "")
-    return p.scheme in ("http", "https") and bool(p.netloc) and "." in p.netloc
-
+      return True
 def validate(d):
     labels = {"name": "name", "reg_no": "registration number",
               "title": "assignment title", "url": "submission URL"}
