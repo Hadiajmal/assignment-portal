@@ -30,7 +30,30 @@ payload = {
     "failed": s.get("failed", 0),
     "overall_status": "PASSED" if s.get("failed", 0) == 0 else "FAILED",
     "tests": tests,
-}
+}lines = [
+    "Repository: " + str(payload["repository"]),
+    "Branch: " + str(payload["branch"]),
+    "Commit: " + str(payload["commit_sha"]),
+    "Run ID: " + str(payload["run_id"]),
+    "Overall result: " + payload["overall_status"],
+    "Total: " + str(payload["total"]) + "  Passed: " + str(payload["passed"]) + "  Failed: " + str(payload["failed"]),
+    "",
+    "Individual results:",
+]
+lines = [
+    "Repository: " + str(payload["repository"]),
+    "Branch: " + str(payload["branch"]),
+    "Commit: " + str(payload["commit_sha"]),
+    "Run ID: " + str(payload["run_id"]),
+    "Overall result: " + payload["overall_status"],
+    "Total: " + str(payload["total"]) + "  Passed: " + str(payload["passed"]) + "  Failed: " + str(payload["failed"]),
+    "",
+    "Individual results:",
+]
+for t in tests:
+    lines.append("- " + t["name"] + ": " + t["result"])
+with open("email_body.txt", "w") as f:
+    f.write("\n".join(lines))
 
 url = os.environ["RECEIVER_URL"].rstrip("/") + "/report"
 resp = requests.post(url, json=payload, headers={"bypass-tunnel-reminder": "1"}, timeout=30)

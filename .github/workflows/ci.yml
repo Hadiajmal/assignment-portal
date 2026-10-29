@@ -19,10 +19,27 @@ jobs:
         run: pytest --json-report --json-report-file=report.json
 
       - name: Send report to localhost
+        id: localreport
         if: always()
+        continue-on-error: true
         env:
           RECEIVER_URL: ${{ secrets.RECEIVER_URL }}
         run: python send_report.py
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CI report ${{ github.repository }} ${{ github.sha }}"
+          to: ${{ secrets.EMAIL_TO }}
+          from: Assignment Portal CI
+          body: file://email_body.txt
+          attachments: report.json
 
       - name: Fail if tests failed
         if: steps.tests.outcome == 'failure'
